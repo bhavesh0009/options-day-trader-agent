@@ -1,0 +1,16 @@
+llm:
+  model: "gemini-2.0-flash"
+
+database:
+  path: "/Users/bhaveshghodasara/Development/price-vol-pattern/data/stocks.duckdb"
+
+broker:
+  mcp_server_path: "./angel-one-mcp-server"
+
+guardrails:
+  max_daily_loss: 5000
+  max_open_positions: 2
+  square_off_time: "15:00"
+  pre_market_start: "08:45"
+
+mode: "paper"

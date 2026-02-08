@@ -1,0 +1,38 @@
+[project]
+name = "odta"
+version = "0.1.0"
+description = "Options Day Trader Agent - Autonomous AI agent for Indian F&O market"
+requires-python = ">=3.11"
+dependencies = [
+    "google-adk>=0.5.0",
+    "google-genai",
+    "duckdb>=1.0.0",
+    "pandas>=2.0",
+    "pandas-ta",
+    "scipy",
+    "pydantic>=2.0",
+    "pyyaml>=6.0",
+    "pytz",
+    "python-dotenv",
+    "mplfinance",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "pytest-asyncio",
+    "ruff",
+]
+phase2 = [
+    "plotly",
+]
+
+[tool.setuptools.packages.find]
+include = ["odta*"]
+
+[tool.ruff]
+line-length = 100
+
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
