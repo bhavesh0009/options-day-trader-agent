@@ -2,7 +2,7 @@ llm:
   model: "gemini-3-pro-preview"
 
 database:
-  path: "./data/stocks.duckdb"
+  path: "/Users/bhaveshghodasara/Development/price-vol-pattern/data/stocks.duckdb"
 
 broker:
   mcp_server_path: "./angel-one-mcp-server"
