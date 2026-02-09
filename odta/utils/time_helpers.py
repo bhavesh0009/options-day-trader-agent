@@ -1,12 +1,13 @@
-from datetime import datetime, time
-import pytz
+from datetime import datetime
 
-IST = pytz.timezone("Asia/Kolkata")
-
-MARKET_OPEN = time(9, 15)
-MARKET_CLOSE = time(15, 30)
-PRE_MARKET_START = time(8, 45)
-SQUARE_OFF_TIME = time(15, 0)
+from odta.constants import (
+    IST,
+    MARKET_OPEN,
+    MARKET_CLOSE,
+    PRE_MARKET_START_TIME,
+    SQUARE_OFF_TIME_OBJ,
+    WEEKEND_START,
+)
 
 
 def now_ist() -> datetime:
@@ -17,7 +18,7 @@ def is_market_open() -> bool:
     now = now_ist()
     current_time = now.time()
     weekday = now.weekday()
-    if weekday >= 5:  # Saturday/Sunday
+    if weekday >= WEEKEND_START:  # Saturday/Sunday
         return False
     return MARKET_OPEN <= current_time <= MARKET_CLOSE
 
@@ -26,13 +27,13 @@ def is_pre_market() -> bool:
     now = now_ist()
     current_time = now.time()
     weekday = now.weekday()
-    if weekday >= 5:
+    if weekday >= WEEKEND_START:
         return False
-    return PRE_MARKET_START <= current_time < MARKET_OPEN
+    return PRE_MARKET_START_TIME <= current_time < MARKET_OPEN
 
 
 def is_past_square_off() -> bool:
-    return now_ist().time() >= SQUARE_OFF_TIME
+    return now_ist().time() >= SQUARE_OFF_TIME_OBJ
 
 
 def today_str() -> str:

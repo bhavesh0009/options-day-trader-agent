@@ -2,7 +2,6 @@ import asyncio
 import os
 from datetime import datetime
 
-import pytz
 from dotenv import load_dotenv
 from google.adk.runners import Runner
 from google.adk.sessions import InMemorySessionService
@@ -12,6 +11,7 @@ from odta.agents.root_agent import build_root_agent
 from odta.models.config import load_config
 from odta.db.schema import initialize_database
 from odta.utils.logger import setup_logger
+from odta.constants import IST, StateKeys, DEFAULT_MONITORING_INTERVAL
 
 
 async def main():
@@ -19,13 +19,12 @@ async def main():
     config = load_config()
 
     # Setup logger with timestamped log file
-    ist = pytz.timezone("Asia/Kolkata")
-    timestamp = datetime.now(ist).strftime("%Y-%m-%d_%H%M%S")
+    timestamp = datetime.now(IST).strftime("%Y-%m-%d_%H%M%S")
     log_file = f"logs/run_{timestamp}.log"
     logger = setup_logger(log_file=log_file)
 
     print(f"{'='*80}")
-    print(f"ODTA Session Started: {datetime.now(ist).strftime('%Y-%m-%d %H:%M:%S IST')}")
+    print(f"ODTA Session Started: {datetime.now(IST).strftime('%Y-%m-%d %H:%M:%S IST')}")
     print(f"Log File: {log_file}")
     print(f"Mode: {config.mode.upper()}")
     print(f"{'='*80}\n")
@@ -47,22 +46,21 @@ async def main():
     )
 
     # Create session with initial state
-    ist = pytz.timezone("Asia/Kolkata")
-    today = datetime.now(ist).strftime("%Y-%m-%d")
+    today = datetime.now(IST).strftime("%Y-%m-%d")
 
     session = await session_service.create_session(
         app_name="odta",
         user_id="trader",
         state={
-            "trade_date": today,
-            "app:mode": config.mode,
-            "app:max_daily_loss": config.guardrails.max_daily_loss,
-            "app:max_open_positions": config.guardrails.max_open_positions,
-            "app:square_off_time": config.guardrails.square_off_time,
-            "daily_pnl": 0,
-            "open_positions_count": 0,
-            "monitoring_interval": 120,
-            "phase": "pre_market",
+            StateKeys.TRADE_DATE: today,
+            StateKeys.APP_MODE: config.mode,
+            StateKeys.APP_MAX_DAILY_LOSS: config.guardrails.max_daily_loss,
+            StateKeys.APP_MAX_OPEN_POSITIONS: config.guardrails.max_open_positions,
+            StateKeys.APP_SQUARE_OFF_TIME: config.guardrails.square_off_time,
+            StateKeys.DAILY_PNL: 0,
+            StateKeys.OPEN_POSITIONS_COUNT: 0,
+            StateKeys.MONITORING_INTERVAL: DEFAULT_MONITORING_INTERVAL,
+            StateKeys.PHASE: "pre_market",
         },
     )
 
@@ -74,7 +72,7 @@ async def main():
         role="user",
         parts=[
             types.Part(
-                text=f"Begin trading day. Date: {today}. Time: {datetime.now(ist).strftime('%H:%M')} IST."
+                text=f"Begin trading day. Date: {today}. Time: {datetime.now(IST).strftime('%H:%M')} IST."
             )
         ],
     )

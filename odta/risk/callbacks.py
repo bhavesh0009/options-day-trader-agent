@@ -1,6 +1,13 @@
 from datetime import datetime
-import pytz
 from google.adk.agents.callback_context import CallbackContext
+
+from odta.constants import (
+    IST,
+    StateKeys,
+    DEFAULT_MAX_DAILY_LOSS,
+    DEFAULT_MAX_OPEN_POSITIONS,
+    SQUARE_OFF_TIME_STR,
+)
 
 
 def risk_manager_callback(
@@ -21,12 +28,11 @@ def risk_manager_callback(
 
     state = callback_context.state
 
-    ist = pytz.timezone("Asia/Kolkata")
-    now = datetime.now(ist)
+    now = datetime.now(IST)
 
     # Rule 1: Daily loss limit
-    daily_pnl = state.get("daily_pnl", 0)
-    max_loss = state.get("app:max_daily_loss", 5000)
+    daily_pnl = state.get(StateKeys.DAILY_PNL, 0)
+    max_loss = state.get(StateKeys.APP_MAX_DAILY_LOSS, DEFAULT_MAX_DAILY_LOSS)
     if daily_pnl <= -max_loss:
         return {
             "status": "REJECTED",
@@ -38,8 +44,8 @@ def risk_manager_callback(
 
     # Rule 2: Position count (only for new orders)
     if tool_name == "place_order":
-        open_count = state.get("open_positions_count", 0)
-        max_positions = state.get("app:max_open_positions", 2)
+        open_count = state.get(StateKeys.OPEN_POSITIONS_COUNT, 0)
+        max_positions = state.get(StateKeys.APP_MAX_OPEN_POSITIONS, DEFAULT_MAX_OPEN_POSITIONS)
         if open_count >= max_positions:
             return {
                 "status": "REJECTED",
@@ -50,7 +56,7 @@ def risk_manager_callback(
             }
 
     # Rule 3: Time check (no new BUY entries near close)
-    square_off_time = state.get("app:square_off_time", "15:00")
+    square_off_time = state.get(StateKeys.APP_SQUARE_OFF_TIME, SQUARE_OFF_TIME_STR)
     if now.strftime("%H:%M") >= square_off_time:
         transaction_type = tool_args.get(
             "transactiontype", tool_args.get("transaction_type", "")

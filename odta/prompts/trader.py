@@ -1,21 +1,27 @@
 from google.adk.agents.readonly_context import ReadonlyContext
 from datetime import datetime
-import pytz
+
+from odta.constants import (
+    IST,
+    StateKeys,
+    DEFAULT_MAX_DAILY_LOSS,
+    DEFAULT_MAX_OPEN_POSITIONS,
+    SQUARE_OFF_TIME_STR,
+)
 
 
 def trader_instruction(context: ReadonlyContext) -> str:
     state = context.state
-    ist = pytz.timezone("Asia/Kolkata")
-    now = datetime.now(ist)
+    now = datetime.now(IST)
 
-    mode = state.get("app:mode", "paper")
-    daily_pnl = state.get("daily_pnl", 0)
-    open_positions = state.get("open_positions_count", 0)
-    max_loss = state.get("app:max_daily_loss", 5000)
-    max_positions = state.get("app:max_open_positions", 2)
-    square_off = state.get("app:square_off_time", "15:00")
-    watchlist = state.get("watchlist", "Not set yet")
-    phase = state.get("phase", "trading")
+    mode = state.get(StateKeys.APP_MODE, "paper")
+    daily_pnl = state.get(StateKeys.DAILY_PNL, 0)
+    open_positions = state.get(StateKeys.OPEN_POSITIONS_COUNT, 0)
+    max_loss = state.get(StateKeys.APP_MAX_DAILY_LOSS, DEFAULT_MAX_DAILY_LOSS)
+    max_positions = state.get(StateKeys.APP_MAX_OPEN_POSITIONS, DEFAULT_MAX_OPEN_POSITIONS)
+    square_off = state.get(StateKeys.APP_SQUARE_OFF_TIME, SQUARE_OFF_TIME_STR)
+    watchlist = state.get(StateKeys.WATCHLIST, "Not set yet")
+    phase = state.get(StateKeys.PHASE, "trading")
 
     mode_label = (
         "PAPER TRADING - simulated execution, real market data"

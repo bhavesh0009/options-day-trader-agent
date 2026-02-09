@@ -1,6 +1,13 @@
 from pydantic import BaseModel
 import yaml
 
+from odta.constants import (
+    DEFAULT_MAX_DAILY_LOSS,
+    DEFAULT_MAX_OPEN_POSITIONS,
+    SQUARE_OFF_TIME_STR,
+    PRE_MARKET_START_STR,
+)
+
 
 class LLMConfig(BaseModel):
     model: str  # No default - must be configured in config.yaml
@@ -15,10 +22,10 @@ class BrokerConfig(BaseModel):
 
 
 class GuardrailsConfig(BaseModel):
-    max_daily_loss: int = 5000
-    max_open_positions: int = 2
-    square_off_time: str = "15:00"
-    pre_market_start: str = "08:45"
+    max_daily_loss: int = DEFAULT_MAX_DAILY_LOSS
+    max_open_positions: int = DEFAULT_MAX_OPEN_POSITIONS
+    square_off_time: str = SQUARE_OFF_TIME_STR
+    pre_market_start: str = PRE_MARKET_START_STR
 
 
 class AppConfig(BaseModel):

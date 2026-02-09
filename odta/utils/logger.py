@@ -1,7 +1,8 @@
 import logging
 import sys
 from datetime import datetime
-import pytz
+
+from odta.constants import IST
 
 
 def setup_logger(name: str = "odta", log_file: str = None) -> logging.Logger:
@@ -22,8 +23,7 @@ def setup_logger(name: str = "odta", log_file: str = None) -> logging.Logger:
 
     # File handler - create separate log file for each run
     if log_file is None:
-        ist = pytz.timezone("Asia/Kolkata")
-        timestamp = datetime.now(ist).strftime("%Y-%m-%d_%H%M%S")
+        timestamp = datetime.now(IST).strftime("%Y-%m-%d_%H%M%S")
         log_file = f"logs/run_{timestamp}.log"
 
     try:

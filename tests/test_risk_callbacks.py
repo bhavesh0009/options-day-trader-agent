@@ -1,5 +1,12 @@
 from unittest.mock import MagicMock, patch
+
 from odta.risk.callbacks import risk_manager_callback
+from odta.constants import (
+    StateKeys,
+    DEFAULT_MAX_DAILY_LOSS,
+    DEFAULT_MAX_OPEN_POSITIONS,
+    SQUARE_OFF_TIME_STR,
+)
 
 
 def _make_callback_context(state: dict) -> MagicMock:
@@ -18,11 +25,11 @@ def test_allow_non_order_tools():
 def test_allow_valid_order():
     """Risk callback should return None for valid orders."""
     ctx = _make_callback_context({
-        "daily_pnl": 0,
-        "open_positions_count": 0,
-        "app:max_daily_loss": 5000,
-        "app:max_open_positions": 2,
-        "app:square_off_time": "15:00",
+        StateKeys.DAILY_PNL: 0,
+        StateKeys.OPEN_POSITIONS_COUNT: 0,
+        StateKeys.APP_MAX_DAILY_LOSS: DEFAULT_MAX_DAILY_LOSS,
+        StateKeys.APP_MAX_OPEN_POSITIONS: DEFAULT_MAX_OPEN_POSITIONS,
+        StateKeys.APP_SQUARE_OFF_TIME: SQUARE_OFF_TIME_STR,
     })
     with patch("odta.risk.callbacks._is_banned", return_value=False):
         with patch("odta.risk.callbacks.datetime") as mock_dt:
@@ -34,8 +41,8 @@ def test_allow_valid_order():
 def test_reject_when_daily_loss_exceeded():
     """Risk callback should reject orders when daily loss limit is hit."""
     ctx = _make_callback_context({
-        "daily_pnl": -5000,
-        "app:max_daily_loss": 5000,
+        StateKeys.DAILY_PNL: -DEFAULT_MAX_DAILY_LOSS,
+        StateKeys.APP_MAX_DAILY_LOSS: DEFAULT_MAX_DAILY_LOSS,
     })
     result = risk_manager_callback(ctx, "place_order", {})
     assert result is not None
@@ -46,10 +53,10 @@ def test_reject_when_daily_loss_exceeded():
 def test_reject_when_max_positions_reached():
     """Risk callback should reject new orders when position limit reached."""
     ctx = _make_callback_context({
-        "daily_pnl": 0,
-        "open_positions_count": 2,
-        "app:max_daily_loss": 5000,
-        "app:max_open_positions": 2,
+        StateKeys.DAILY_PNL: 0,
+        StateKeys.OPEN_POSITIONS_COUNT: DEFAULT_MAX_OPEN_POSITIONS,
+        StateKeys.APP_MAX_DAILY_LOSS: DEFAULT_MAX_DAILY_LOSS,
+        StateKeys.APP_MAX_OPEN_POSITIONS: DEFAULT_MAX_OPEN_POSITIONS,
     })
     result = risk_manager_callback(ctx, "place_order", {})
     assert result is not None
@@ -60,11 +67,11 @@ def test_reject_when_max_positions_reached():
 def test_reject_after_square_off_time():
     """Risk callback should reject BUY orders after square-off time."""
     ctx = _make_callback_context({
-        "daily_pnl": 0,
-        "open_positions_count": 0,
-        "app:max_daily_loss": 5000,
-        "app:max_open_positions": 2,
-        "app:square_off_time": "15:00",
+        StateKeys.DAILY_PNL: 0,
+        StateKeys.OPEN_POSITIONS_COUNT: 0,
+        StateKeys.APP_MAX_DAILY_LOSS: DEFAULT_MAX_DAILY_LOSS,
+        StateKeys.APP_MAX_OPEN_POSITIONS: DEFAULT_MAX_OPEN_POSITIONS,
+        StateKeys.APP_SQUARE_OFF_TIME: SQUARE_OFF_TIME_STR,
     })
     with patch("odta.risk.callbacks._is_banned", return_value=False):
         with patch("odta.risk.callbacks.datetime") as mock_dt:
@@ -81,11 +88,11 @@ def test_reject_after_square_off_time():
 def test_reject_banned_securities():
     """Risk callback should reject orders for banned stocks."""
     ctx = _make_callback_context({
-        "daily_pnl": 0,
-        "open_positions_count": 0,
-        "app:max_daily_loss": 5000,
-        "app:max_open_positions": 2,
-        "app:square_off_time": "15:00",
+        StateKeys.DAILY_PNL: 0,
+        StateKeys.OPEN_POSITIONS_COUNT: 0,
+        StateKeys.APP_MAX_DAILY_LOSS: DEFAULT_MAX_DAILY_LOSS,
+        StateKeys.APP_MAX_OPEN_POSITIONS: DEFAULT_MAX_OPEN_POSITIONS,
+        StateKeys.APP_SQUARE_OFF_TIME: SQUARE_OFF_TIME_STR,
     })
     with patch("odta.risk.callbacks._is_banned", return_value=True):
         with patch("odta.risk.callbacks.datetime") as mock_dt:
