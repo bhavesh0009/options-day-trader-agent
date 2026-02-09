@@ -1,4 +1,5 @@
 from odta.db.connection import get_db_connection
+from odta.utils.json_helpers import convert_to_json_serializable
 
 
 def query_database(sql: str, explanation: str) -> dict:
@@ -33,7 +34,9 @@ def query_database(sql: str, explanation: str) -> dict:
         return {
             "status": "success",
             "columns": columns,
-            "rows": [list(row) for row in result],
+            "rows": [
+                [convert_to_json_serializable(val) for val in row] for row in result
+            ],
             "row_count": len(result),
         }
     except Exception as e:

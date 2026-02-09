@@ -1,6 +1,7 @@
 import pandas as pd
 import pandas_ta as ta
 from odta.db.connection import get_db_connection
+from odta.utils.json_helpers import convert_to_json_serializable
 
 
 def calculate_indicator(
@@ -72,7 +73,7 @@ def calculate_indicator(
 
         # Return last 10 values
         recent = pd.concat([df[["date", "close"]], result], axis=1).tail(10)
-        # Convert date objects and NaN to serializable types
+        # Convert to JSON-serializable format
         records = recent.to_dict(orient="records")
         for record in records:
             for key, value in record.items():
@@ -82,6 +83,8 @@ def calculate_indicator(
                     record[key] = str(value)
                 elif pd.isna(value):
                     record[key] = None
+                else:
+                    record[key] = convert_to_json_serializable(value)
 
         return {
             "status": "success",

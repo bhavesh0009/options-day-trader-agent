@@ -1,0 +1,3 @@
+[submodule "angel-one-mcp-server"]
+	path = angel-one-mcp-server
+	url = https://github.com/bhavesh0009/angel-one-mcp-server.git

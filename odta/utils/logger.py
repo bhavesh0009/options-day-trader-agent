@@ -20,11 +20,11 @@ def setup_logger(name: str = "odta", log_file: str = None) -> logging.Logger:
     console.setFormatter(formatter)
     logger.addHandler(console)
 
-    # File handler
+    # File handler - create separate log file for each run
     if log_file is None:
         ist = pytz.timezone("Asia/Kolkata")
-        today = datetime.now(ist).strftime("%Y-%m-%d")
-        log_file = f"logs/{today}.log"
+        timestamp = datetime.now(ist).strftime("%Y-%m-%d_%H%M%S")
+        log_file = f"logs/run_{timestamp}.log"
 
     try:
         file_handler = logging.FileHandler(log_file)

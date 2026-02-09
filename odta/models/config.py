@@ -3,7 +3,7 @@ import yaml
 
 
 class LLMConfig(BaseModel):
-    model: str = "gemini-2.0-flash"
+    model: str  # No default - must be configured in config.yaml
 
 
 class DatabaseConfig(BaseModel):
@@ -22,7 +22,7 @@ class GuardrailsConfig(BaseModel):
 
 
 class AppConfig(BaseModel):
-    llm: LLMConfig = LLMConfig()
+    llm: LLMConfig
     database: DatabaseConfig = DatabaseConfig()
     broker: BrokerConfig = BrokerConfig()
     guardrails: GuardrailsConfig = GuardrailsConfig()
@@ -30,9 +30,6 @@ class AppConfig(BaseModel):
 
 
 def load_config(path: str = "config.yaml") -> AppConfig:
-    try:
-        with open(path) as f:
-            data = yaml.safe_load(f)
-        return AppConfig(**data)
-    except FileNotFoundError:
-        return AppConfig()
+    with open(path) as f:
+        data = yaml.safe_load(f)
+    return AppConfig(**data)

@@ -17,7 +17,18 @@ from odta.utils.logger import setup_logger
 async def main():
     load_dotenv()
     config = load_config()
-    logger = setup_logger()
+
+    # Setup logger with timestamped log file
+    ist = pytz.timezone("Asia/Kolkata")
+    timestamp = datetime.now(ist).strftime("%Y-%m-%d_%H%M%S")
+    log_file = f"logs/run_{timestamp}.log"
+    logger = setup_logger(log_file=log_file)
+
+    print(f"{'='*80}")
+    print(f"ODTA Session Started: {datetime.now(ist).strftime('%Y-%m-%d %H:%M:%S IST')}")
+    print(f"Log File: {log_file}")
+    print(f"Mode: {config.mode.upper()}")
+    print(f"{'='*80}\n")
 
     # Initialize database (create new tables if needed)
     initialize_database(config.database.path)
@@ -73,20 +84,33 @@ async def main():
         session_id=session.id,
         new_message=content,
     ):
+        # Debug: log all events
+        logger.debug(f"Event: author={event.author}, is_final={event.is_final_response()}, has_content={bool(event.content)}")
+
+        # Log all agent outputs
         if event.content and event.content.parts:
             for part in event.content.parts:
                 if hasattr(part, "text") and part.text:
-                    msg = f"[{event.author}] {part.text[:200]}"
-                    print(msg)
-                    logger.info(msg)
+                    full_text = part.text
+                    # Print full text to console
+                    print(f"\n{'='*80}\n[{event.author}]\n{'='*80}")
+                    print(full_text)
+                    print('='*80 + '\n')
+                    # Log truncated version to file (to avoid huge log files)
+                    logger.info(f"[{event.author}] {full_text[:500]}...")
 
+        # Only break when the root agent (daily_session) completes
+        # Not when individual sub-agents finish
         if event.is_final_response():
-            print(f"\n=== ODTA Day Complete | Final output from: {event.author} ===")
-            if event.content and event.content.parts:
-                final_text = event.content.parts[0].text
-                print(final_text)
-                logger.info(f"Final: {final_text[:500]}")
-            break
+            if event.author == "daily_session":
+                print(f"\n=== ODTA Day Complete | Final output from: {event.author} ===")
+                if event.content and event.content.parts:
+                    final_text = event.content.parts[0].text
+                    print(final_text)
+                    logger.info(f"Final: {final_text[:500]}")
+                break
+            else:
+                logger.info(f"Sub-agent {event.author} completed, continuing to next agent...")
 
     print(f"=== ODTA Shutdown | {today} ===")
     logger.info("ODTA shutdown complete")

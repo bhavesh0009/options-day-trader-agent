@@ -26,7 +26,7 @@ root_agent (SequentialAgent: "daily_session")
 | Component | Technology |
 |-----------|-----------|
 | Orchestration | Google ADK |
-| LLM | Gemini 2.0 Flash (swappable) |
+| LLM | Configurable (any ADK-compatible model) |
 | Broker | Angel One via MCP Server |
 | Database | DuckDB |
 | Indicators | pandas-ta |
@@ -66,7 +66,7 @@ Edit `config.yaml`:
 
 ```yaml
 llm:
-  model: "gemini-2.0-flash"
+  model: "gemini-3-pro-preview"  # Or any ADK-compatible model
 database:
   path: "/path/to/stocks.duckdb"
 broker:
@@ -95,7 +95,7 @@ python main.py
 ### Interactive debugging with ADK Web UI
 
 ```bash
-adk web odta/agents
+adk web adk_apps
 ```
 
 ### Run tests

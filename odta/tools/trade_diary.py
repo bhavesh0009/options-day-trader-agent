@@ -1,4 +1,5 @@
 from odta.db.connection import get_db_connection
+from odta.utils.json_helpers import convert_rows_to_dicts
 
 
 def read_trade_diary(last_n_trades: int = 15, include_daily_summaries: bool = True) -> dict:
@@ -36,10 +37,7 @@ def read_trade_diary(last_n_trades: int = 15, include_daily_summaries: bool = Tr
 
     result = {
         "status": "success",
-        "trades": [
-            {k: str(v) if hasattr(v, "isoformat") else v for k, v in zip(columns, t)}
-            for t in trades
-        ],
+        "trades": convert_rows_to_dicts(trades, columns),
     }
 
     if include_daily_summaries:
@@ -50,9 +48,8 @@ def read_trade_diary(last_n_trades: int = 15, include_daily_summaries: bool = Tr
             ORDER BY trade_date DESC
             LIMIT 5
         """).fetchall()
-        result["daily_summaries"] = [
-            {"date": str(s[0]), "summary": s[1], "conditions": s[2]} for s in summaries
-        ]
+        summary_columns = ["date", "summary", "conditions"]
+        result["daily_summaries"] = convert_rows_to_dicts(summaries, summary_columns)
 
     return result
 

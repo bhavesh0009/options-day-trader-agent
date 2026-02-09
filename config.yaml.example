@@ -2,7 +2,7 @@ llm:
   model: "gemini-3-pro-preview"
 
 database:
-  path: "./data/stocks.duckdb"
+  path: "./data/stocks.duckdb"  # Update with your database path
 
 broker:
   mcp_server_path: "./angel-one-mcp-server"
@@ -13,4 +13,4 @@ guardrails:
   square_off_time: "15:00"
   pre_market_start: "08:45"
 
-mode: "paper"
+mode: "paper"  # Options: "paper" or "live"

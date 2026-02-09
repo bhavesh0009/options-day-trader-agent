@@ -1,18 +1,66 @@
+# Environment variables and secrets
 .env
+.env.local
+*.key
+*.pem
+*.p12
+credentials.json
+
+# Local configuration (may contain personal paths)
+config.local.yaml
+
+# Python
 __pycache__/
 *.pyc
 *.pyo
+*.pyd
+.Python
+*.so
+
+# Virtual environments
 .venv/
 venv/
+env/
+ENV/
+
+# Distribution / packaging
 *.egg-info/
 dist/
 build/
+*.egg
+
+# Testing and linting
 .ruff_cache/
 .pytest_cache/
-logs/*.log
-data/*.db
+.coverage
+htmlcov/
+.tox/
+.hypothesis/
+
+# Logs and databases
+logs/
+*.log
+data/
+*.db
+*.duckdb
 *.db-journal
 *.db-wal
+*.sqlite
+*.sqlite3
+
+# IDE and OS
 .DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Node (if any JS tools are used)
 node_modules/
 .next/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
