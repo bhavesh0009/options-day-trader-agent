@@ -5,6 +5,7 @@ from google.adk.tools.mcp_tool.mcp_toolset import McpToolset, StdioConnectionPar
 from mcp import StdioServerParameters
 
 from odta.agents.pre_market import build_pre_market_agent
+from odta.agents.market_gate import MarketGateAgent
 from odta.agents.trader import build_trader_agent
 from odta.agents.loop_controller import LoopController
 from odta.agents.eod import build_eod_agent
@@ -39,6 +40,7 @@ def build_root_agent():
     broker_tools = _build_broker_toolset(config)
 
     pre_market = build_pre_market_agent(config)
+    market_gate = MarketGateAgent(name="market_gate")
     trader = build_trader_agent(config, broker_tools)
     loop_ctrl = LoopController(name="loop_controller")
     eod = build_eod_agent(config)
@@ -50,7 +52,8 @@ def build_root_agent():
         max_iterations=300,  # safety cap (~10 hours at 2min avg)
     )
 
+    # Daily session: pre-market prep -> gate check -> trading loop -> EOD summary
     return SequentialAgent(
         name="daily_session",
-        sub_agents=[pre_market, trading_loop, eod],
+        sub_agents=[pre_market, market_gate, trading_loop, eod],
     )
