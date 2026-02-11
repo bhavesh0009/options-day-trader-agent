@@ -27,18 +27,30 @@ IST = pytz.timezone(IST_TIMEZONE_NAME)
 
 
 # ============================================================================
-# TRADING HOURS (time objects for comparison logic)
+# TRADING HOURS (NSE Official Timings - time objects for comparison logic)
 # ============================================================================
+# Pre-Open Session: 9:00 AM - 9:15 AM
+#   9:00-9:08 → Order entry/modification
+#   9:08-9:12 → Order matching (price discovery)
+#   9:12-9:15 → Transition buffer
+PRE_MARKET_START_TIME = time(9, 0)
+
+# Normal Trading Session: 9:15 AM - 3:30 PM
 MARKET_OPEN = time(9, 15)
 MARKET_CLOSE = time(15, 30)
-PRE_MARKET_START_TIME = time(8, 45)
+
+# Post-Market Session: 3:40 PM - 4:00 PM
+POST_MARKET_START = time(15, 40)
+POST_MARKET_END = time(16, 0)
+
+# Square-off time: 3:00 PM (30 mins before close to avoid last-minute volatility)
 SQUARE_OFF_TIME_OBJ = time(15, 0)
 
 
 # ============================================================================
 # TIME STRINGS (for config, display, and string comparisons)
 # ============================================================================
-PRE_MARKET_START_STR = "08:45"
+PRE_MARKET_START_STR = "09:00"
 SQUARE_OFF_TIME_STR = "15:00"
 
 

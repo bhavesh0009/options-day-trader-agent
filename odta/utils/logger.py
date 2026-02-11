@@ -1,6 +1,7 @@
 import logging
 import sys
 from datetime import datetime
+from pathlib import Path
 
 from odta.constants import IST
 
@@ -27,10 +28,25 @@ def setup_logger(name: str = "odta", log_file: str = None) -> logging.Logger:
         log_file = f"logs/run_{timestamp}.log"
 
     try:
-        file_handler = logging.FileHandler(log_file)
+        # Ensure logs directory exists
+        log_path = Path(log_file)
+        log_path.parent.mkdir(parents=True, exist_ok=True)
+
+        # Create file handler with immediate flushing
+        file_handler = logging.FileHandler(log_file, mode='a', encoding='utf-8')
+        file_handler.setFormatter(formatter)
+        file_handler.setLevel(logging.INFO)
+
+        # Force immediate flush after each log (prevents data loss on crash)
+        class FlushingFileHandler(logging.FileHandler):
+            def emit(self, record):
+                super().emit(record)
+                self.flush()
+
+        file_handler = FlushingFileHandler(log_file, mode='a', encoding='utf-8')
         file_handler.setFormatter(formatter)
         logger.addHandler(file_handler)
-    except FileNotFoundError:
-        pass  # logs/ directory might not exist yet
+    except Exception as e:
+        logger.warning(f"Could not create file handler for {log_file}: {e}")
 
     return logger

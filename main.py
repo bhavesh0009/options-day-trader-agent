@@ -94,8 +94,8 @@ async def main():
                     print(f"\n{'='*80}\n[{event.author}]\n{'='*80}")
                     print(full_text)
                     print('='*80 + '\n')
-                    # Log truncated version to file (to avoid huge log files)
-                    logger.info(f"[{event.author}] {full_text[:500]}...")
+                    # Log full text to file for complete audit trail
+                    logger.info(f"[{event.author}] {full_text}")
 
         # Only break when the root agent (daily_session) completes
         # Not when individual sub-agents finish
@@ -105,7 +105,7 @@ async def main():
                 if event.content and event.content.parts:
                     final_text = event.content.parts[0].text
                     print(final_text)
-                    logger.info(f"Final: {final_text[:500]}")
+                    logger.info(f"Final: {final_text}")
                 break
             else:
                 logger.info(f"Sub-agent {event.author} completed, continuing to next agent...")

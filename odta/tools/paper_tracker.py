@@ -104,7 +104,10 @@ def record_paper_trade(
         ).fetchone()
 
         if position:
-            pnl = (price - position[1]) * position[2]
+            # Convert Decimal to float to avoid type errors
+            entry_price = float(position[1])
+            quantity = float(position[2])
+            pnl = (price - entry_price) * quantity
             conn.execute(
                 """
                 UPDATE paper_positions SET exit_price = ?, exit_time = ?, status = 'CLOSED', pnl = ?

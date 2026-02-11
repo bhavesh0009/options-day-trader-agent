@@ -104,6 +104,23 @@ adk web adk_apps
 pytest tests/ -v
 ```
 
+### Clean test data from database
+
+After testing runs, clean runtime tables (trade_diary, decision_log, paper_positions) while preserving market data:
+
+```bash
+# Interactive mode (with confirmation)
+python cleanup_db.py
+
+# Preview without deleting
+python cleanup_db.py --dry-run
+
+# Force mode (skip confirmation)
+python cleanup_db.py --force
+```
+
+This script deletes all test/runtime data but preserves reference tables (fno_stocks, daily_ohlcv, index_ohlcv, ban_list).
+
 ## Project Structure
 
 ```

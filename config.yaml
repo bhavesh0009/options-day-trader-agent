@@ -10,7 +10,9 @@ broker:
 guardrails:
   max_daily_loss: 5000
   max_open_positions: 2
-  square_off_time: "15:00"
-  pre_market_start: "08:45"
+  # square_off_time and pre_market_start use defaults from constants.py
+  # Uncomment below to override:
+  # square_off_time: "15:00"
+  # pre_market_start: "09:00"
 
 mode: "paper"

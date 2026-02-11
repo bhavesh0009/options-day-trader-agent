@@ -9,6 +9,7 @@ from odta.tools.trade_diary import read_trade_diary, write_trade_diary
 from odta.tools.decision_logger import log_decision
 from odta.tools.charts import generate_chart, generate_index_chart
 from odta.tools.paper_tracker import get_paper_positions, record_paper_trade
+from odta.tools.time_helpers import get_current_time
 from odta.risk.callbacks import risk_manager_callback
 from odta.prompts.trader import trader_instruction
 from odta.agents.news import build_news_agent
@@ -29,6 +30,7 @@ def build_trader_agent(config, broker_tools):
         log_decision,
         generate_chart,
         generate_index_chart,
+        get_current_time,
         news_tool,
     ]
 
